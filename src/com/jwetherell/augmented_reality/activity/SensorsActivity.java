@@ -221,7 +221,8 @@ public class SensorsActivity extends Activity implements SensorEventListener, Lo
 	            grav[1] = evt.values[1];
 	            grav[2] = evt.values[2];
         	}
-        	Orientation.calcOrientation(grav);
+        	//Orientation.calcOrientation(grav);
+        	Orientation.calcOrientation(grav,getWindowManager().getDefaultDisplay().getRotation());
         	ARData.setDeviceOrientation(Orientation.getDeviceOrientation());
         	ARData.setDeviceOrientationAngle(Orientation.getDeviceAngle());
         } else if (evt.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
@@ -241,7 +242,29 @@ public class SensorsActivity extends Activity implements SensorEventListener, Lo
         // Get rotation matrix given the gravity and geomagnetic matrices
         SensorManager.getRotationMatrix(temp, null, grav, mag);
 
-        SensorManager.remapCoordinateSystem(temp, SensorManager.AXIS_Y, SensorManager.AXIS_MINUS_Z, rotation);
+        //SensorManager.remapCoordinateSystem(temp, SensorManager.AXIS_Y, SensorManager.AXIS_MINUS_Z, rotation);
+        //Android Accelerometer Issue
+        //ref : http://stackoverflow.com/questions/7094279/android-accelerometer-issue
+        //default screen orientation of landscape
+        //test : sony z2 table , samsung s2 , HTC butterfly s
+        switch(getWindowManager().getDefaultDisplay().getRotation()){
+            case Surface.ROTATION_0:
+                SensorManager.remapCoordinateSystem(temp, SensorManager.AXIS_Z, SensorManager.AXIS_Y, rotation);
+                break;
+
+            case Surface.ROTATION_90:
+                SensorManager.remapCoordinateSystem(temp, SensorManager.AXIS_Y, SensorManager.AXIS_MINUS_Z, rotation);
+                break;
+
+            case Surface.ROTATION_180:
+                break;
+
+            case Surface.ROTATION_270:
+                break;
+
+            default:
+                break;
+        }
 
         /*
          * Using Matrix operations instead. This was way too inaccurate, 
