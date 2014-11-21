@@ -26,7 +26,8 @@ public class Orientation {
         UNKNOWN, PORTRAIT, PORTRAIT_UPSIDE_DOWN, LANDSCAPE, LANDSCAPE_UPSIDE_DOWN
     };
 
-    public static void calcOrientation(float[] accel_values) {
+    //public static void calcOrientation(float[] accel_values) {
+    public static void calcOrientation(float[] accel_values,int rotation) {
         int tempOrientation = -1;
         float X = -accel_values[0];
         float Y = -accel_values[1];
@@ -50,6 +51,29 @@ public class Orientation {
 
         // now we must figure out which orientation based on the degrees
         ORIENTATION tempOrientRounded = ORIENTATION.UNKNOWN;
+        
+        
+        //fix default screen orientation of landscape
+        //only in landscape
+        switch(rotation){
+            case Surface.ROTATION_0:
+                tempOrientation += 90;
+                break;
+
+            case Surface.ROTATION_90:
+                tempOrientation += 180;
+                break;
+
+            case Surface.ROTATION_180:
+                break;
+
+            case Surface.ROTATION_270:
+                break;
+
+            default:
+                break;
+        }
+        
         // figure out actual orientation
         if (tempOrientation <= 45 || tempOrientation > 315) { // round to 0
             tempOrientRounded = ORIENTATION.PORTRAIT;// portrait
